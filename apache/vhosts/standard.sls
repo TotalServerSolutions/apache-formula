@@ -21,6 +21,28 @@ include:
     - watch_in:
       - module: apache-reload
 
+
+
+{% if site.get('CustomLog') != False %}
+{% set customlogdir = salt['file.dirname'](site.get('CustomLog')) %}
+{{ id }}-customlogdir:
+  file.directory:
+    - unless: test -d {{ customlogdir }}
+    - name: {{ customlogdir }}
+    - makedirs: True
+    - allow_symlink: True
+{% endif %}
+
+{% if site.get('ErrorLog') != False %}
+{% set customerrordir = salt['file.dirname'](site.get('ErrorLog')) %}
+{{ id }}-customerrordir:
+  file.directory:
+    - unless: test -d {{ customerrordir }}
+    - name: {{ customerrordir }}
+    - makedirs: True
+    - allow_symlink: True
+{% endif %}
+
 {% if site.get('DocumentRoot') != False %}
 {{ id }}-documentroot:
   file.directory:
@@ -29,6 +51,17 @@ include:
     - makedirs: True
     - allow_symlink: True
 {% endif %}
+
+{% if site.get('cgiRoot') != False %}
+{% set cgidir = site.get('cgiRoot') %}
+{{ id }}-cgidir:
+  file.directory:
+    - unless: test -d {{ cgidir }}
+    - name: {{ cgidir }}
+    - makedirs: True
+    - allow_symlink: True
+{% endif %}
+
 
 {% if grains.os_family == 'Debian' %}
 {% if site.get('enabled', True) %}
